@@ -1,5 +1,6 @@
 
 
+
 export type Language = 'en' | 'zh';
 
 export const translations = {
@@ -28,6 +29,7 @@ export const translations = {
     download: "Download",
     delete: "Delete Image",
     details: "Details & Prompt",
+    toggleBlur: "Toggle Blur / NSFW",
     settings: "Settings",
     hfToken: "Hugging Face Token",
     hfTokenHelp: "Optional. Provide",
@@ -73,6 +75,7 @@ export const translations = {
     download: "下载",
     delete: "删除图片",
     details: "详情与提示词",
+    toggleBlur: "切换模糊 / NSFW",
     settings: "设置",
     hfToken: "Hugging Face 令牌",
     hfTokenHelp: "可选。提供",

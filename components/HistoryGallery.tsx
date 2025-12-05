@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { GeneratedImage } from '../types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -84,7 +85,7 @@ export const HistoryGallery: React.FC<HistoryGalleryProps> = ({ images, onSelect
                 <img
                     src={img.url}
                     alt={img.prompt}
-                    className="h-full w-full object-cover transition-transform duration-400 ease-in-out group-hover:scale-110"
+                    className={`h-full w-full object-cover transition-transform duration-400 ease-in-out group-hover:scale-110 ${img.isBlurred ? 'blur-sm' : ''}`}
                     loading="lazy"
                     onContextMenu={(e) => e.preventDefault()}
                 />

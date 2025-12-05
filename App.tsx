@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { generateImage, optimizePrompt } from './services/hfService';
 import { GeneratedImage, AspectRatioOption, ModelOption } from './types';
@@ -22,7 +23,9 @@ import {
   Trash2,
   Copy,
   Check,
-  Timer
+  Timer,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 const MODEL_OPTIONS = [
@@ -64,11 +67,18 @@ export default function App() {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
-  // Initialize history from localStorage
+  // Initialize history from localStorage with expiration check (delete older than 1 day)
   const [history, setHistory] = useState<GeneratedImage[]>(() => {
     try {
       const saved = localStorage.getItem('ai_image_gen_history');
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      
+      const parsedHistory: GeneratedImage[] = JSON.parse(saved);
+      const now = Date.now();
+      const oneDayInMs = 24 * 60 * 60 * 1000;
+      
+      // Filter out images older than 1 day
+      return parsedHistory.filter(img => (now - img.timestamp) < oneDayInMs);
     } catch (e) {
       console.error("Failed to load history", e);
       return [];
@@ -189,6 +199,18 @@ export default function App() {
       setCurrentImage(null);
     }
     setShowInfo(false);
+  };
+
+  const handleToggleBlur = () => {
+    if (!currentImage) return;
+    
+    const newStatus = !currentImage.isBlurred;
+    const updatedImage = { ...currentImage, isBlurred: newStatus };
+    
+    setCurrentImage(updatedImage);
+    setHistory(prev => prev.map(img => 
+      img.id === currentImage.id ? updatedImage : img
+    ));
   };
 
   const handleCopyPrompt = async () => {
@@ -345,7 +367,7 @@ export default function App() {
           </button>
         </header>
 
-        <main className="w-full max-w-7xl flex-1 flex flex-col md:items-stretch md:mx-auto md:flex-row gap-6 px-6 md:px-6 pb-8 pt-6">
+        <main className="w-full max-w-7xl flex-1 flex flex-col-reverse md:items-stretch md:mx-auto md:flex-row gap-6 px-6 md:px-6 pb-8 pt-6">
           
           {/* Left Column: Controls */}
           <aside className="w-full md:max-w-sm flex-shrink-0 flex flex-col gap-6">
@@ -505,7 +527,7 @@ export default function App() {
                          <img 
                             src={currentImage.url} 
                             alt={currentImage.prompt} 
-                            className="max-w-full max-h-full object-contain shadow-2xl cursor-grab active:cursor-grabbing"
+                            className={`max-w-full max-h-full object-contain shadow-2xl cursor-grab active:cursor-grabbing transition-all duration-300 ${currentImage.isBlurred ? 'blur-lg scale-105' : ''}`}
                             onContextMenu={(e) => e.preventDefault()}
                             onLoad={(e) => {
                                 setImageDimensions({
@@ -594,6 +616,16 @@ export default function App() {
                                 className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${showInfo ? 'bg-purple-600 text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
                              >
                                 <Info className="w-5 h-5" />
+                             </button>
+
+                             <div className="w-px h-5 bg-white/10 mx-1"></div>
+
+                             <button 
+                                onClick={handleToggleBlur}
+                                title={t.toggleBlur}
+                                className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all ${currentImage.isBlurred ? 'text-purple-400 bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+                             >
+                                {currentImage.isBlurred ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                              </button>
 
                              <div className="w-px h-5 bg-white/10 mx-1"></div>

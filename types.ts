@@ -9,6 +9,7 @@ export interface GeneratedImage {
     model: string;
     seed?: number;
     duration?: number;
+    isBlurred?: boolean;
 }
 
 export type AspectRatioOption = "1:1" | "3:2" | "2:3" | "3:4" | "4:3" | "4:5" | "5:4" | "9:16" | "16:9";
