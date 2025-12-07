@@ -10,16 +10,12 @@ const getZImageDimensions = (ratio: AspectRatioOption, enableHD: boolean): { wid
     switch (ratio) {
       case "16:9":
         return { width: 2048, height: 1152 };
-      case "5:4":
-        return { width: 1920, height: 1536 };
       case "4:3":
         return { width: 2048, height: 1536 };
       case "3:2":
         return { width: 1920, height: 1280 };
       case "9:16":
         return { width: 1152, height: 2048 };
-      case "4:5":
-        return { width: 1536, height: 1920 };
       case "3:4":
         return { width: 1536, height: 2048 };
       case "2:3":
@@ -32,16 +28,12 @@ const getZImageDimensions = (ratio: AspectRatioOption, enableHD: boolean): { wid
       switch (ratio) {
       case "16:9":
         return { width: 1280, height: 720 };
-      case "5:4":
-        return { width: 1280, height: 1024 };
       case "4:3":
         return { width: 1024, height: 768 };
       case "3:2":
         return { width: 1536, height: 1024 };
       case "9:16":
         return { width: 720, height: 1280 };
-      case "4:5":
-        return { width: 1024, height: 1280 };
       case "3:4":
         return { width: 768, height: 1024 };
       case "2:3":
@@ -94,7 +86,7 @@ function extractCompleteEventData(sseStream: string): any | null {
 const generateZImage = async (
   prompt: string,
   aspectRatio: AspectRatioOption,
-  seed: number = Math.round(Math.random() * 1000000000),
+  seed: number = Math.round(Math.random() * 2147483647),
   enableHD: boolean = false
 ): Promise<GeneratedImage> => {
   let { width, height } = getZImageDimensions(aspectRatio, enableHD);

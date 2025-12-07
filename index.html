@@ -3,12 +3,28 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Peinture - Free AI Image Generator</title>
+    <meta name="description" content="Create stunning AI art with Peinture. A free, dark-themed AI image generator featuring Z-Image Turbo & Qwen models. 4x Upscaling, prompt optimization, and history gallery included." />
+    <meta name="keywords" content="AI image generator, text to image, AI art, stable diffusion, Z-Image Turbo, Qwen, free AI tool, image upscaler, prompt engineering" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://peinture.9th.xyz/" />
+    <meta property="og:title" content="Peinture - Free AI Image Generator" />
+    <meta property="og:description" content="Create stunning AI art with Peinture. Free, fast, and high-quality AI image generation." />
+    <meta property="og:image" content="https://cdn.xiangfa.org/upload/WX20251206-170626@2x.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Peinture - Free AI Image Generator" />
+    <meta property="twitter:description" content="Create stunning AI art with Peinture. Free, fast, and high-quality AI image generation." />
+    <meta property="twitter:image" content="https://cdn.xiangfa.org/upload/WX20251206-170626@2x.png" />
+    
     <link
       rel="icon"
       href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTgwcHgiIGhlaWdodD0iMTgwcHgiIHZpZXdCb3g9IjAgMCAxODAgMTgwIiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPHRpdGxlPjE4MHgxODAgKGlQaG9uZSlAMXg8L3RpdGxlPgogICAgPGcgaWQ9IjE4MHgxODAtKGlQaG9uZSkiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxnIGlkPSJsb2dvMiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDAsIDEwKSI+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik05NCwxMTggQzk0LDEyMi40MTgyNzggOTAuNDE4Mjc4LDEyNiA4NiwxMjYgTDgsMTI2IEMzLjU4MTcyMiwxMjYgMCwxMjIuNDE4Mjc4IDAsMTE4IEwwLDQwIEMwLDM1LjU4MTcyMiAzLjU4MTcyMiwzMiA4LDMyIiBpZD0i6Lev5b6EIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InNxdWFyZSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9wYXRoPgogICAgICAgICAgICA8bGluZSB4MT0iOTMuNSIgeTE9Ijc3LjUiIHgyPSI5NC40NDk3MDMzIiB5Mj0iMTE1LjQ4ODEzMSIgaWQ9IuebtOe6vy0yIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48L2xpbmU+CiAgICAgICAgICAgIDxsaW5lIHgxPSI3IiB5MT0iMzIuNSIgeDI9IjUwLjUiIHkyPSIzMi41IiBpZD0i55u057q/IiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48L2xpbmU+CiAgICAgICAgICAgIDxwb2x5Z29uIGlkPSLot6/lvoQiIGZpbGw9IiMwMDAwMDAiIGZpbGwtcnVsZT0ibm9uemVybyIgcG9pbnRzPSIxNCAxMDMgMzEuMjUgODAuMzMzMzMzMyA0OC41IDk3LjMzMzMzMzMgNjUuNzUgNjkgODMgMTAzIj48L3BvbHlnb24+CiAgICAgICAgICAgIDxjaXJjbGUgaWQ9IuakreWchuW9oiIgZmlsbD0iIzAwMDAwMCIgZmlsbC1ydWxlPSJub256ZXJvIiBjeD0iMzIuNSIgY3k9IjYwLjUiIHI9IjcuNSI+PC9jaXJjbGU+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik05My41NTU0ODA5LDAgQzkzLjU1NTQ4MDksMTkuMDUzODMyNSA3OC4xNDE2NTE4LDM0LjUgNTkuMTI3NzEwOCwzNC41IEM3OC4xNDE2NTE4LDM0LjUgOTMuNTU1NDgwOSw0OS45NDYzNCA5My41NTU0ODA5LDY5IEM5My41NTU0ODA5LDQ5Ljk0NjM0IDEwOC45Njk0ODIsMzQuNSAxMjcuOTgzMjUxLDM0LjUgQzEwOC45Njk0ODIsMzQuNSA5My41NTU0ODA5LDE5LjA1MzgzMjUgOTMuNTU1NDgwOSwwIFoiIGlkPSLot6/lvoQiIGZpbGw9IiMwMDAwMDAiIGZpbGwtcnVsZT0ibm9uemVybyI+PC9wYXRoPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+"
       type="svg+xml"
     />
-    <title>AI Image Gen</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style>
         /* Custom Scrollbar for the gallery */

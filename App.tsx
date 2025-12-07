@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { generateImage, optimizePrompt, upscaler } from './services/hfService';
 import { GeneratedImage, AspectRatioOption, ModelOption } from './types';
@@ -33,6 +31,7 @@ import {
   X,
   Check as CheckIcon,
   RotateCcw,
+  History,
 } from 'lucide-react';
 
 const MODEL_OPTIONS = [
@@ -56,8 +55,6 @@ export default function App() {
     { value: '1:1', label: t.ar_square },
     { value: '9:16', label: t.ar_photo_9_16 },
     { value: '16:9', label: t.ar_movie },
-    { value: '4:5', label: t.ar_insta },
-    { value: '5:4', label: t.ar_print },
     { value: '3:4', label: t.ar_portrait_3_4 },
     { value: '4:3', label: t.ar_landscape_4_3 },
     { value: '3:2', label: t.ar_portrait_3_2 },
@@ -76,6 +73,18 @@ export default function App() {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
+  // Prompt History State
+  const [promptHistory, setPromptHistory] = useState<string[]>(() => {
+    try {
+      const saved = sessionStorage.getItem('prompt_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [showPromptHistory, setShowPromptHistory] = useState<boolean>(false);
+  const promptHistoryRef = useRef<HTMLDivElement>(null);
+
   // Transition state for upscaling
   const [isComparing, setIsComparing] = useState<boolean>(false);
   const [tempUpscaledImage, setTempUpscaledImage] = useState<string | null>(null);
@@ -113,10 +122,26 @@ export default function App() {
     localStorage.setItem('app_language', lang);
   }, [lang]);
 
-  // History Persistence
+  // Image History Persistence
   useEffect(() => {
     localStorage.setItem('ai_image_gen_history', JSON.stringify(history));
   }, [history]);
+
+  // Prompt History Persistence
+  useEffect(() => {
+    sessionStorage.setItem('prompt_history', JSON.stringify(promptHistory));
+  }, [promptHistory]);
+
+  // Close prompt history on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (promptHistoryRef.current && !promptHistoryRef.current.contains(event.target as Node)) {
+        setShowPromptHistory(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Initial Selection Effect
   useEffect(() => {
@@ -145,8 +170,20 @@ export default function App() {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
+  const addToPromptHistory = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    setPromptHistory(prev => {
+        // Remove duplicate if exists to move to top
+        const filtered = prev.filter(p => p !== trimmed);
+        return [trimmed, ...filtered].slice(0, 50); // Keep last 50
+    });
+  };
+
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
+
+    addToPromptHistory(prompt);
 
     setIsLoading(true);
     setError(null);
@@ -236,6 +273,8 @@ export default function App() {
   const handleOptimizePrompt = async () => {
     if (!prompt.trim()) return;
     
+    addToPromptHistory(prompt); // Save original prompt before optimizing
+
     setIsOptimizing(true);
     setError(null);
     try {
@@ -441,32 +480,75 @@ export default function App() {
               <div className="relative z-10 bg-black/20 p-6 rounded-xl backdrop-blur-xl border border-white/10 flex flex-col gap-6 shadow-2xl shadow-black/20">
                 
                 {/* Prompt Input */}
-                <div className="group">
-                  <label className="flex flex-col flex-1">
+                <div className="group flex flex-col flex-1">
                     <div className="flex items-center justify-between pb-3">
-                        <p className="text-white text-lg font-medium leading-normal group-focus-within:text-purple-400 transition-colors">{t.prompt}</p>
-                        <button
-                            onClick={handleOptimizePrompt}
-                            disabled={isOptimizing || !prompt.trim()}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 bg-white/5 hover:bg-white/10 hover:text-purple-300 rounded-lg transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
-                            title={t.optimizeTitle}
-                        >
-                            {isOptimizing ? (
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                                <Wand2 className="w-3.5 h-3.5" />
+                        <label htmlFor="prompt-input" className="text-white text-lg font-medium leading-normal group-focus-within:text-purple-400 transition-colors cursor-pointer">{t.prompt}</label>
+                        
+                        <div className="flex items-center gap-2">
+                            {/* History Prompt Button */}
+                            {promptHistory.length > 0 && (
+                                <div className="relative animate-in fade-in zoom-in-0 duration-300" ref={promptHistoryRef}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setShowPromptHistory(!showPromptHistory);
+                                        }}
+                                        className={`flex items-center justify-center h-7 w-7 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-all border border-transparent hover:border-white/10 ${showPromptHistory ? 'text-purple-400 bg-white/10 border-white/10' : ''}`}
+                                        title={t.promptHistory}
+                                        type="button"
+                                    >
+                                        <History className="w-4 h-4" />
+                                    </button>
+                                    
+                                    {/* History Dropdown */}
+                                    {showPromptHistory && (
+                                        <div className="absolute right-0 top-full mt-2 w-72 max-h-[300px] overflow-y-auto custom-scrollbar rounded-xl bg-[#1A1625] border border-white/10 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100 flex flex-col">
+                                            <div className="p-1">
+                                                {promptHistory.map((historyPrompt, index) => (
+                                                    <button
+                                                        key={index}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setPrompt(historyPrompt);
+                                                            setShowPromptHistory(false);
+                                                        }}
+                                                        className="w-full text-left p-3 text-sm text-white/80 hover:bg-white/10 rounded-lg transition-colors group border-b border-white/5 last:border-0 last:border-b-0"
+                                                        type="button"
+                                                    >
+                                                        <p className="line-clamp-4 text-xs leading-relaxed opacity-80 group-hover:opacity-100 break-words">{historyPrompt}</p>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             )}
-                            {isOptimizing ? t.optimizing : t.optimize}
-                        </button>
+
+                            <button
+                                onClick={handleOptimizePrompt}
+                                disabled={isOptimizing || !prompt.trim()}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white/60 bg-white/5 hover:bg-white/10 hover:text-purple-300 rounded-lg transition-all border border-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                title={t.optimizeTitle}
+                                type="button"
+                            >
+                                {isOptimizing ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                    <Wand2 className="w-3.5 h-3.5" />
+                                )}
+                                {isOptimizing ? t.optimizing : t.optimize}
+                            </button>
+                        </div>
                     </div>
                     <textarea 
+                      id="prompt-input"
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       disabled={isOptimizing}
                       className="form-input flex w-full min-w-0 flex-1 resize-none rounded-lg text-white/90 focus:outline-0 focus:ring-2 focus:ring-purple-500/50 border border-white/10 bg-white/5 focus:border-purple-500 min-h-36 placeholder:text-white/30 p-4 text-base font-normal leading-normal transition-all disabled:opacity-50 disabled:cursor-not-allowed" 
                       placeholder={t.promptPlaceholder}
                     />
-                  </label>
                 </div>
 
                 {/* Parameters */}

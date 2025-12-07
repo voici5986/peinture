@@ -78,7 +78,7 @@ export const HistoryGallery: React.FC<HistoryGalleryProps> = ({ images, onSelect
                 key={img.id}
                 onClick={() => onSelect(img)}
                 className={`
-                    relative group flex-shrink-0 h-24 w-24 rounded-lg overflow-hidden cursor-pointer transition-all snap-start
+                    relative group flex-shrink-0 h-24 w-24 rounded-lg overflow-hidden cursor-pointer transition-all snap-start select-none
                     ${selectedId === img.id ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-[#0D0B14]' : 'ring-2 ring-transparent hover:ring-white/50'}
                 `}
                 >

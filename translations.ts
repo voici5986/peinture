@@ -43,15 +43,14 @@ export const translations = {
     apply: "Keep Changes",
     discard: "Discard",
     reset: "Reset",
+    promptHistory: "Prompt History",
 
     // Aspect Ratios
     ar_square: "Default 1:1",
     ar_photo_9_16: "Photography 9:16",
     ar_movie: "Movie 16:9",
-    ar_insta: "Instagram 4:5",
-    ar_print: "Print 5:4",
-    ar_portrait_3_4: "Mobile 3:4",
-    ar_landscape_4_3: "TV 4:3",
+    ar_portrait_3_4: "Instagram 3:4",
+    ar_landscape_4_3: "Print 4:3",
     ar_portrait_3_2: "DSLR Camera 3:2",
     ar_landscape_2_3: "DSLR Photography 2:3",
   },
@@ -95,15 +94,14 @@ export const translations = {
     apply: "保留图片",
     discard: "取消更改",
     reset: "重置",
+    promptHistory: "历史提示词",
 
     // Aspect Ratios
     ar_square: "默认 1:1",
     ar_photo_9_16: "摄影 9:16",
     ar_movie: "电影 16:9",
-    ar_insta: "社交媒体 4:5",
-    ar_print: "打印 5:4",
-    ar_portrait_3_4: "早期手机 3:4",
-    ar_landscape_4_3: "早期电视 4:3",
+    ar_portrait_3_4: "社交媒体 3:4",
+    ar_landscape_4_3: "打印 4:3",
     ar_portrait_3_2: "单反摄像 3:2",
     ar_landscape_2_3: "单反摄影 2:3",
   }
