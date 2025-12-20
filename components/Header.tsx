@@ -32,22 +32,6 @@ export const Header: React.FC<HeaderProps> = ({
   t 
 }) => {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [showGallery, setShowGallery] = useState(false);
-
-  // Check storage config periodically or on render to show Gallery link
-  useEffect(() => {
-    const checkConfig = () => {
-        setShowGallery(isStorageConfigured());
-    };
-    
-    checkConfig();
-    window.addEventListener('storage', checkConfig);
-    const interval = setInterval(checkConfig, 2000); 
-    return () => {
-        window.removeEventListener('storage', checkConfig);
-        clearInterval(interval);
-    }
-  }, []);
 
   return (
     <header className="w-full backdrop-blur-md sticky top-0 z-50 bg-background-dark/30 border-b border-white/5">
@@ -102,16 +86,14 @@ export const Header: React.FC<HeaderProps> = ({
                             {t.nav_editor}
                             {currentView === 'editor' && <Check className="w-3.5 h-3.5 ml-auto" />}
                         </button>
-                        {showGallery && (
-                            <button
-                                onClick={() => { setCurrentView('gallery'); setIsMobileNavOpen(false); }}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${currentView === 'gallery' ? 'bg-purple-600/20 text-purple-400' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
-                            >
-                                <ImageIcon className="w-4 h-4" />
-                                {t.nav_gallery}
-                                {currentView === 'gallery' && <Check className="w-3.5 h-3.5 ml-auto" />}
-                            </button>
-                        )}
+                        <button
+                            onClick={() => { setCurrentView('gallery'); setIsMobileNavOpen(false); }}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${currentView === 'gallery' ? 'bg-purple-600/20 text-purple-400' : 'text-white/70 hover:bg-white/5 hover:text-white'}`}
+                        >
+                            <ImageIcon className="w-4 h-4" />
+                            {t.nav_gallery}
+                            {currentView === 'gallery' && <Check className="w-3.5 h-3.5 ml-auto" />}
+                        </button>
                     </div>
                 </>
             )}
@@ -119,13 +101,12 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Desktop: Sliding Pill Navigation (Centered) */}
         <div className="hidden md:block absolute left-1/2 -translate-x-1/2">
-            <div className={`relative flex items-center bg-black/20 border border-white/10 rounded-full p-1 ${showGallery ? 'w-[300px]' : 'w-[200px]'}`}>
+            <div className="relative flex items-center bg-black/20 border border-white/10 rounded-full p-1 w-[300px]">
                 {/* Background Sliding Pill */}
                 <div 
-                    className={`absolute top-1 bottom-1 rounded-full bg-purple-600 shadow-lg shadow-purple-900/30 transition-all duration-300 ease-out z-0
-                    ${showGallery ? 'w-[calc(33.33%-4px)]' : 'w-[calc(50%-4px)]'}
+                    className={`absolute top-1 bottom-1 rounded-full bg-purple-600 shadow-lg shadow-purple-900/30 transition-all duration-300 ease-out z-0 w-[calc(33.33%-4px)]
                     ${currentView === 'creation' ? 'left-1' : 
-                      (currentView === 'editor' ? (showGallery ? 'left-[calc(33.33%+2px)]' : 'left-[calc(50%+2px)]') : 
+                      (currentView === 'editor' ? 'left-[calc(33.33%+2px)]' : 
                       'left-[calc(66.66%+2px)]')}
                     `}
                 />
@@ -149,15 +130,13 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
 
                 {/* Gallery Button */}
-                {showGallery && (
-                    <button 
-                        onClick={() => setCurrentView('gallery')}
-                        className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium transition-colors duration-300 ${currentView === 'gallery' ? 'text-white' : 'text-white/60 hover:text-white/90'}`}
-                    >
-                        <ImageIcon className="w-4 h-4" />
-                        {t.nav_gallery}
-                    </button>
-                )}
+                <button 
+                    onClick={() => setCurrentView('gallery')}
+                    className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-1.5 text-sm font-medium transition-colors duration-300 ${currentView === 'gallery' ? 'text-white' : 'text-white/60 hover:text-white/90'}`}
+                >
+                    <ImageIcon className="w-4 h-4" />
+                    {t.nav_gallery}
+                </button>
             </div>
         </div>
         

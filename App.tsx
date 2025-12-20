@@ -782,7 +782,16 @@ export default function App() {
         let blob: Blob;
         if (typeof imageBlobOrUrl === 'string') {
             // Fetch blob from URL
-            const response = await fetch(imageBlobOrUrl);
+            let fetchUrl = imageBlobOrUrl;
+            
+            // Check if Gitee provider to apply proxy
+            const context = metadata || (currentImage ? { ...currentImage } : {});
+            if (context.provider === 'gitee') {
+                 const cleanUrl = imageBlobOrUrl.replace(/^https?:\/\//, '');
+                 fetchUrl = `https://i0.wp.com/${cleanUrl}`;
+            }
+
+            const response = await fetch(fetchUrl);
             if (!response.ok) throw new Error("Failed to fetch image for upload");
             blob = await response.blob();
         } else {
@@ -1018,6 +1027,7 @@ export default function App() {
                 <CloudGallery 
                     t={t} 
                     handleUploadToS3={handleUploadToCloud}
+                    onOpenSettings={handleOpenSettings}
                 />
             </main>
         )}

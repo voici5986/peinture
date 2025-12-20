@@ -1,4 +1,6 @@
 
+
+
 export type Language = 'en' | 'zh';
 
 export const translations = {
@@ -253,6 +255,11 @@ export const translations = {
     cloud_gallery_empty: "No Cloud Images",
     cloud_gallery_desc: "Upload images to cloud storage to see them here.",
     
+    // Gallery Setup Guide
+    gallery_setup_title: "Configure Cloud Gallery",
+    gallery_setup_desc: "Connect your S3 or WebDAV storage to view your generated creations anywhere.",
+    gallery_setup_btn: "Configure Storage",
+
     share_link: "Share Link",
     share_success: "Link copied!",
     delete_confirm: "Are you sure you want to delete this file?",
@@ -511,6 +518,11 @@ export const translations = {
     upload_media: "上传媒体",
     cloud_gallery_empty: "暂无云端图片",
     cloud_gallery_desc: "上传图片到云端后将在此显示。",
+
+    // Gallery Setup Guide
+    gallery_setup_title: "配置云端画廊",
+    gallery_setup_desc: "连接您的 S3 或 WebDAV 存储，随时随地查看您的创作。",
+    gallery_setup_btn: "配置存储服务",
 
     share_link: "分享链接",
     share_success: "链接已复制！",

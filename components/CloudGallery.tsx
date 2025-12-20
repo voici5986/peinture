@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { CloudFile } from '../types';
-import { CloudUpload, Image as ImageIcon, Film, Loader2, Download, Trash2, Copy, Eye, EyeOff, Maximize2, X, Check } from 'lucide-react';
+import { CloudUpload, Image as ImageIcon, Film, Loader2, Download, Trash2, Copy, Eye, EyeOff, Maximize2, X, Check, Settings } from 'lucide-react';
 import { isStorageConfigured, listCloudFiles, deleteCloudFile, getStorageType, fetchCloudBlob, renameCloudFile, getFileId, getS3Config } from '../services/storageService';
 import { Tooltip } from './Tooltip';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
@@ -10,9 +10,10 @@ import { generateUUID } from '../services/utils';
 interface CloudGalleryProps {
     t: any;
     handleUploadToS3: (blob: Blob, fileName: string, metadata?: any) => Promise<void>;
+    onOpenSettings: () => void;
 }
 
-export const CloudGallery: React.FC<CloudGalleryProps> = ({ t, handleUploadToS3 }) => {
+export const CloudGallery: React.FC<CloudGalleryProps> = ({ t, handleUploadToS3, onOpenSettings }) => {
     const [files, setFiles] = useState<CloudFile[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
@@ -119,6 +120,13 @@ export const CloudGallery: React.FC<CloudGalleryProps> = ({ t, handleUploadToS3 
 
         return () => observer.disconnect();
     }, [files.length]);
+
+    const handleUploadClick = (e: React.MouseEvent) => {
+        if (!isConfigured) {
+            e.preventDefault();
+            onOpenSettings();
+        }
+    };
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -346,18 +354,6 @@ export const CloudGallery: React.FC<CloudGalleryProps> = ({ t, handleUploadToS3 
     const type = getStorageType();
     const useProxyLoading = type === 'webdav' || (type === 's3' && !getS3Config().publicDomain);
 
-    if (!isConfigured && !loading) {
-         return (
-             <div className="flex-1 flex flex-col items-center justify-center text-white/30 space-y-4 min-h-[50vh] animate-in fade-in duration-300">
-                 <div className="p-4 bg-white/5 rounded-full">
-                    <CloudUpload className="w-12 h-12 opacity-50" />
-                 </div>
-                 <h3 className="text-xl font-medium text-white/50">{t.cloud_gallery_empty}</h3>
-                 <p className="text-sm max-w-md text-center">{t.cloud_gallery_desc}</p>
-             </div>
-         );
-    }
-
     return (
         <div className="w-full h-full flex flex-col p-4 animate-in fade-in duration-300">
              
@@ -369,32 +365,56 @@ export const CloudGallery: React.FC<CloudGalleryProps> = ({ t, handleUploadToS3 
                 </div>
                 
                 <div className="flex-shrink-0">
-                    <label className={`
-                        flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-2.5 
-                        rounded-full font-bold text-white cursor-pointer shadow-lg
-                        bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500
-                        hover:opacity-90 active:scale-95 transition-all text-sm md:text-base
-                        ${uploading ? 'opacity-70 cursor-not-allowed' : ''}
-                    `}>
-                        <input 
-                            type="file" 
-                            className="hidden" 
-                            accept="image/*,video/*"
-                            onChange={handleFileSelect}
-                            disabled={uploading}
-                        />
-                        {uploading ? (
-                            <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
-                        ) : (
-                            <CloudUpload className="w-4 h-4 md:w-5 md:h-5" />
-                        )}
-                        <span className="hidden md:inline">{uploading ? t.uploading : t.upload_media}</span>
-                        <span className="md:hidden">{uploading ? '' : t.upload}</span>
-                    </label>
+                    {/* Upload Button handles both file selection and configuration trigger */}
+                    {isConfigured ? (
+                        <label className={`
+                            flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-2.5 
+                            rounded-full font-bold text-white cursor-pointer shadow-lg
+                            bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500
+                            hover:opacity-90 active:scale-95 transition-all text-sm md:text-base
+                            ${uploading ? 'opacity-70 cursor-not-allowed' : ''}
+                        `}>
+                            <input 
+                                type="file" 
+                                className="hidden" 
+                                accept="image/*,video/*"
+                                onChange={handleFileSelect}
+                                disabled={uploading}
+                            />
+                            {uploading ? (
+                                <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                            ) : (
+                                <CloudUpload className="w-4 h-4 md:w-5 md:h-5" />
+                            )}
+                            <span className="hidden md:inline">{uploading ? t.uploading : t.upload_media}</span>
+                            <span className="md:hidden">{uploading ? '' : t.upload}</span>
+                        </label>
+                    ) : (
+                        <button 
+                            onClick={onOpenSettings}
+                            className="
+                                flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-2.5 
+                                rounded-full font-bold text-white cursor-pointer shadow-lg
+                                bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500
+                                hover:opacity-90 active:scale-95 transition-all text-sm md:text-base
+                            "
+                        >
+                            <Settings className="w-4 h-4 md:w-5 md:h-5" />
+                            <span className="hidden md:inline">{t.gallery_setup_btn}</span>
+                            <span className="md:hidden">{t.settings}</span>
+                        </button>
+                    )}
                 </div>
              </div>
              
-             {loading ? (
+             {!isConfigured ? (
+                 <div className="flex-1 flex flex-col items-center justify-center text-white/30 space-y-4 min-h-[50vh] animate-in fade-in duration-500">
+                     <div className="text-center space-y-2 max-w-md px-4">
+                         <h3 className="text-xl font-medium text-white/60">{t.gallery_setup_title || "Configure Cloud Gallery"}</h3>
+                         <p className="text-sm text-white/40 leading-relaxed">{t.gallery_setup_desc || "Connect your S3 or WebDAV storage to view your generated creations anywhere."}</p>
+                     </div>
+                 </div>
+             ) : loading ? (
                  <div className="flex-1 flex items-center justify-center min-h-[50vh]">
                      <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
                  </div>
