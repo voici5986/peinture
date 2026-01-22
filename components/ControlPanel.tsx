@@ -39,8 +39,8 @@ export const ControlPanel: React.FC = () => {
         { value: '16:9', label: t.ar_movie },
         { value: '3:4', label: t.ar_portrait_3_4 },
         { value: '4:3', label: t.ar_landscape_4_3 }, 
-        { value: '3:2', label: t.ar_portrait_3_2 },
         { value: '2:3', label: t.ar_landscape_2_3 },
+        { value: '3:2', label: t.ar_portrait_3_2 },
     ], [t]);
 
     // Build grouped model options dynamically

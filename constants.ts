@@ -36,6 +36,8 @@ export const API_MODEL_MAP: Record<ProviderOption, Record<string, string>> = {
   },
   a4f: {
     'z-image-turbo': 'provider-8/z-image',
+    'imagen-4': 'provider-8/imagen-4',
+    'imagen-3.5': 'provider-4/imagen-3.5',
     'gemini-2.5-flash-lite': 'provider-5/gemini-2.5-flash-lite', // text
     'gemini-2.0-flash': 'provider-8/gemini-2.0-flash', // text
     'deepseek-v3.1': 'provider-2/deepseek-v3.1', // text
@@ -70,7 +72,9 @@ export const MS_MODEL_OPTIONS = [
 ];
 
 export const A4F_MODEL_OPTIONS = [
-  { value: 'z-image-turbo', label: 'Z-Image Turbo' }
+  { value: 'z-image-turbo', label: 'Z-Image Turbo' },
+  { value: 'imagen-4', label: 'Google Imagen 4' },
+  { value: 'imagen-3.5', label: 'Google Imagen 3.5' }
 ];
 
 export const PROVIDER_OPTIONS = [

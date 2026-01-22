@@ -27,6 +27,7 @@ export const Select: React.FC<SelectProps> = ({ label, value, onChange, options,
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [maxHeight, setMaxHeight] = useState<number>(300);
+  const [menuPosition, setMenuPosition] = useState<'top' | 'bottom'>('bottom');
 
   // Helper to flatten options for finding selected label
   const flattenedOptions = options.flatMap(opt => 
@@ -51,14 +52,27 @@ export const Select: React.FC<SelectProps> = ({ label, value, onChange, options,
   useEffect(() => {
     if (isOpen && containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        const scrollY = window.scrollY || document.documentElement.scrollTop;
-        const elementBottom = rect.bottom + scrollY;
-        const docHeight = document.documentElement.scrollHeight;
-        const spaceBelow = docHeight - elementBottom - 20;
-        const calculatedMaxHeight = Math.max(120, Math.min(300, spaceBelow));
-        setMaxHeight(calculatedMaxHeight);
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        
+        // Estimate height based on options count (approx 36px per item + padding)
+        // Or default to max allowed height
+        const estimatedHeight = Math.min(300, flattenedOptions.length * 40 + 40);
+
+        // If not enough space below, but enough space above, flip to top
+        if (spaceBelow < estimatedHeight && spaceAbove > estimatedHeight) {
+            setMenuPosition('top');
+            // Recalculate max height for top position if needed (constrained by space above)
+            const calculatedMaxHeight = Math.max(120, Math.min(300, spaceAbove - 20));
+            setMaxHeight(calculatedMaxHeight);
+        } else {
+            setMenuPosition('bottom');
+            // Recalculate max height for bottom position
+            const calculatedMaxHeight = Math.max(120, Math.min(300, spaceBelow - 20));
+            setMaxHeight(calculatedMaxHeight);
+        }
     }
-  }, [isOpen]);
+  }, [isOpen, flattenedOptions.length]);
 
   const renderOption = (option: Option) => (
     <button
@@ -109,9 +123,13 @@ export const Select: React.FC<SelectProps> = ({ label, value, onChange, options,
 
           <div 
             className={`
-              absolute z-50 w-full mt-2 left-0
+              absolute z-50 w-full left-0
               grid transition-[grid-template-rows,opacity,transform] duration-300 ease-out 
-              ${isOpen ? 'grid-rows-[1fr] opacity-100 translate-y-0' : 'grid-rows-[0fr] opacity-0 -translate-y-2 pointer-events-none'}
+              ${menuPosition === 'top' ? 'bottom-full mb-2 origin-bottom' : 'top-full mt-2 origin-top'}
+              ${isOpen 
+                  ? 'grid-rows-[1fr] opacity-100 translate-y-0' 
+                  : `grid-rows-[0fr] opacity-0 pointer-events-none ${menuPosition === 'top' ? 'translate-y-2' : '-translate-y-2'}`
+              }
             `}
           >
             <div className="overflow-hidden">
@@ -122,6 +140,9 @@ export const Select: React.FC<SelectProps> = ({ label, value, onChange, options,
                 >
                   {options.map((item, index) => {
                     if ('options' in item) {
+                      // Optimization: If a group has no options, do not render the header
+                      if (item.options.length === 0) return null;
+
                       return (
                         <div key={item.label || index} className="mb-1 last:mb-0">
                           <div className="px-4 py-1.5 text-[10px] font-bold text-white/40 uppercase tracking-wider flex items-center gap-2">
